@@ -1,0 +1,38 @@
+server:
+  port: 8080 # El frontend solo llama a http://localhost:8080/api/...
+
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173" # frontend Vue
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+      routes:
+        - id: reporte-incendio
+          uri: http://report-service:8081
+          predicates:
+            - Path=/api/reporte-incendio,/api/reporte-incendio/**
+
+        - id: user-service
+          uri: http://user-service:8082
+          predicates:
+            - Path=/api/usuario,/api/usuario/**,/api/brigada,/api/brigada/**
+
+        - id: alert-service
+          uri: http://alert-service:8083
+          predicates:
+            - Path=/api/alerta-emergencia,/api/alerta-emergencia/**
+
+        - id: bff-service
+          uri: http://bff-service:8084 # Asumiendo que le pongas el puerto 8084
+          predicates:
+              - Path=/api/bff/**
